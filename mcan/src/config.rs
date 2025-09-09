@@ -68,14 +68,22 @@ pub struct BitTiming {
     /// MCAN peripheral is divisible into time quanta such that the bit time
     /// determined by `phase_seg_1` and `phase_seg_2` is a whole number of time
     /// quanta.
+    /// 
+    /// When [`allow_fractional`] is selected, the real bitrate
+    /// is allowed to be up to 0.05% off (Which is within tolerance)
     pub bitrate: HertzU32,
+    /// Allows for fractional bitrates where there may be no perfect
+    /// combination of bit-timing parameters. This is useful for bitrates
+    /// like 83.3kbps where some tolerance is allowed (Up to 0.05%).
+    pub allow_fractional: bool
 }
 
 impl BitTiming {
     /// Create an instance
     ///
     /// Nominal bitrate value must be provided, all other settings come
-    /// pre-populated with default values.
+    /// pre-populated with default values. No fractional bitrates
+    /// are allowed.
     pub fn new(bitrate: HertzU32) -> Self {
         Self {
             // Note: SWJ and {N,D}TSEG{1,2} defaults come from reset values
@@ -83,6 +91,7 @@ impl BitTiming {
             phase_seg_1: 0xB,
             phase_seg_2: 0x4,
             bitrate,
+            allow_fractional: false
         }
     }
 }
@@ -199,7 +208,11 @@ impl BitTiming {
         let f_out = self.bitrate;
         let bit_time_quanta = self.time_quanta_per_bit();
         let f_q = f_out * bit_time_quanta;
-        let max_tolerance = self.bitrate.to_Hz() / 2000; // 0.05% tolerance
+        let max_tolerance = if self.allow_fractional {
+            self.bitrate.to_Hz() / 2000 // 0.05% tolerance
+        } else {
+            0
+        };
         match f_can.to_Hz().checked_rem(f_q.to_Hz()) {
             Some(x) if x <= max_tolerance => {
                 let prescaler = f_can / f_q;
