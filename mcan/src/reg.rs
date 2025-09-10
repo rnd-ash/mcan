@@ -1,6 +1,7 @@
 //! Low-level access to peripheral registers
 
 #![allow(non_camel_case_types)]
+#![allow(mismatched_lifetime_syntaxes)]
 pub mod generic;
 
 /// Blanket implementation trait that provides convenience method for recasting
