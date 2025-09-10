@@ -69,7 +69,7 @@ pub struct BitTiming {
     /// determined by `phase_seg_1` and `phase_seg_2` is a whole number of time
     /// quanta.
     ///
-    /// When [`allow_fractional`] is selected, the real bitrate
+    /// When [`Self::allow_fractional`] is selected, the real bitrate
     /// is allowed to be up to 0.05% off (Which is within tolerance)
     pub bitrate: HertzU32,
     /// Allows for fractional bitrates where there may be no perfect
