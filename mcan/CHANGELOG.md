@@ -3,6 +3,7 @@
 Tagging in git follows a pattern: `mcan/<version>`.
 
 ## [Unreleased]
+- Added support for fractional baudrates (#59)
 
 ## [0.7.0] - 2025-04-23
 
